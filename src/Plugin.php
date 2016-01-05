@@ -61,12 +61,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            ScriptEvents::POST_INSTALL_CMD => [
-                ['onPostAnything', 0],
-            ],
-            ScriptEvents::POST_UPDATE_CMD => [
-                ['onPostAnything', 0],
-            ],
             ScriptEvents::POST_AUTOLOAD_DUMP => [
                 ['onPostAnything', 0],
             ],
@@ -83,7 +77,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->writeError('<info>' . $event->getName() . ' ...</info>');
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface) {
-                $manager->processPackage($package);
+                $this->processPackage($package);
             }
         }
     }
@@ -94,7 +88,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param CompletePackageInterface $package
      * @void
      */
-    public function processPackage(CompletePackageInterface $package)
+    public function processPackage($package)
     {
         $this->io->writeError($package->getName() . ' ');
         $extra = $package->getExtra();
