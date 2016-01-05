@@ -4,5 +4,5 @@ hiqdev/composer-extension-plugin changelog
 ## Under development
 
 
-## Development started
+## Development started 2016-01-05
 
