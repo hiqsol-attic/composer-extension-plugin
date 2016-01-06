@@ -14,23 +14,58 @@ namespace hiqdev\composerextensionplugin;
 use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
+use Composer\Package\PackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
+use Composer\Util\Filesystem;
 
 /**
  * Plugin class.
+ *
+ * @author Andrii Vasyliev <sol@hiqdev.com>
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    const EXTRA_EXTENSION = 'extension';
-    const EXTRA_BOOTSTRAP = 'bootstrap';
-    const EXTENSIONS_FILE = 'yiisoft/extensions.php';
+    const EXTRA_CONFIG     = 'yii2-extraconfig';
+    const EXTRA_BOOTSTRAP  = 'bootstrap';
+    const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
+    const EXTRACONFIG_FILE = 'yiisoft/extraconfig.php';
 
     /**
      * @var PackageInterface[] the array of active composer packages
      */
     protected $packages;
+
+    /**
+     * @var string absolute path to vendor directory.
+     */
+    protected $vendorDir;
+
+    /**
+     * @var Filesystem utility
+     */
+    protected $filesystem;
+
+    /**
+     * @var array aliases
+     */
+    protected $aliases = [];
+
+    /**
+     * @var array bootstrap
+     */
+    protected $bootstrap = [];
+
+    /**
+     * @var array extra configuration
+     */
+    protected $extraconfig = [];
+
+    /**
+     * @var array extensions
+     */
+    protected $extensions;
 
     /**
      * @var Composer instance
@@ -80,18 +115,117 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $this->processPackage($package);
             }
         }
+
+        foreach (['aliases', 'bootstrap'] as $k) {
+            $v = empty($this->extraconfig[$k]) ? $this->$k : array_merge($this->$k, $this->extraconfig[$k]);
+            if (!empty($v)) {
+                $this->extraconfig[$k] = $v;
+            }
+        }
+
+        $this->saveFile(static::EXTENSIONS_FILE, $this->extensions);
+        $this->saveFile(static::EXTRACONFIG_FILE, $this->extraconfig);
+    }
+
+    /**
+     * Writes file.
+     * @param string $file
+     * @param array $data
+     * @void
+     */
+    protected function saveFile($file, array $data)
+    {
+        $path = $this->getVendorDir() . '/' . $file;
+        if (!file_exists(dirname($path))) {
+            mkdir(dirname($path), 0777, true);
+        }
+        $array = str_replace("'<vendor-dir>", '$vendorDir . \'', var_export($data, true));
+        file_put_contents($path, "<?php\n\n\$vendorDir = dirname(__DIR__);\n\nreturn $array;\n");
     }
 
     /**
      * Scans the given package and collects extensions data.
-     *
-     * @param CompletePackageInterface $package
+     * @param PackageInterface $package
      * @void
      */
-    public function processPackage($package)
+    public function processPackage(PackageInterface $package)
     {
         $this->io->writeError($package->getName() . ' ');
         $extra = $package->getExtra();
+        $extension = [
+            'name'    => $package->getName(),
+            'version' => $package->getVersion(),
+        ];
+        if ($package->getVersion() === '9999999-dev') {
+            $reference = $package->getSourceReference() ?: $package->getDistReference();
+            if ($reference) {
+                $extension['reference'] = $reference;
+            }
+        }
+
+        $this->aliases = array_merge($this->aliases,
+            $this->prepareAliases($package, 'psr-0'),
+            $this->prepareAliases($package, 'psr-4')
+        );
+
+        if (isset($extra[static::EXTRA_BOOTSTRAP])) {
+            $this->bootstrap[] = $extra[static::EXTRA_BOOTSTRAP];
+        }
+
+        if (isset($extra[static::EXTRA_CONFIG])) {
+            $this->extraconfig = array_merge($this->extraconfig, $this->readExtraConf($extra[static::EXTRA_CONFIG]));
+        }
+
+        $this->extensions[$package->getName()] = $extension;
+    }
+
+    /**
+     * Read extraConf
+     * @param mixed $file
+     * @access protected
+     * @return void
+     */
+    protected function readExtraConf($file)
+    {
+        die($file);
+    }
+
+    /**
+     * Prepare aliases.
+     *
+     * @param PackageInterface $package
+     * @param string 'psr-0' or 'psr-4'
+     * @return array
+     */
+    protected function prepareAliases(PackageInterface $package, $psr)
+    {
+        $autoload = $package->getAutoload();
+        if (empty($autoload[$psr])) {
+            return [];
+        }
+
+        $vendor  = $this->getVendorDir();
+        $aliases = [];
+        foreach ($autoload[$psr] as $name => $path) {
+            if (is_array($path)) {
+                // ignore psr-4 autoload specifications with multiple search paths
+                // we can not convert them into aliases as they are ambiguous
+                continue;
+            }
+            $name    = str_replace('\\', '/', trim($name, '\\'));
+            $postfix = 'psr-0' === $psr ? '/' . $name : '';
+            if (!$this->getFilesystem()->isAbsolutePath($path)) {
+                $path = $vendor . '/' . $package->getPrettyName() . '/' . $path;
+            }
+            $path = $this->getFilesystem()->normalizePath($path);
+            if (strpos($path . '/', $vendor . '/') === 0) {
+                $aliases["@$name"] = '<vendor-dir>' . substr($path, strlen($vendor)) . $postfix;
+            } else {
+                $aliases["@$name"] = $path . $postfix;
+            }
+        }
+
+        return $aliases;
     }
 
     /**
@@ -112,9 +246,35 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->packages === null) {
             $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
-            $this->packages[] = $this->composer->getPackage();
         }
 
         return $this->packages;
+    }
+
+    /**
+     * Get absolute path to composer vendor dir.
+     * @return string
+     */
+    public function getVendorDir()
+    {
+        if ($this->vendorDir === null) {
+            $dir = $this->composer->getConfig()->get('vendor-dir', '/');
+            $this->vendorDir = $this->getFilesystem()->normalizePath($dir);
+        }
+
+        return $this->vendorDir;
+    }
+
+    /**
+     * Getter for filesystem utility
+     * @return Filesystem
+     */
+    public function getFilesystem()
+    {
+        if ($this->filesystem === null) {
+            $this->filesystem = new Filesystem();
+        }
+
+        return $this->filesystem;
     }
 }
