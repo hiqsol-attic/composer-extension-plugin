@@ -3,6 +3,7 @@ hiqdev/composer-extension-plugin commits history
 
 ## Under development
 
+    - ed7d8b7 2016-01-06 fixes (sol@hiqdev.com)
     - c1490d8 2016-01-06 + root package processing and BASE_DIR_ALIAS (sol@hiqdev.com)
     - 0a48dee 2016-01-06 looks working (sol@hiqdev.com)
     - 96e736f 2016-01-06 adding extraconfig (sol@hiqdev.com)

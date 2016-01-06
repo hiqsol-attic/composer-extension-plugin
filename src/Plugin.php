@@ -245,7 +245,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function substitutePath($path, $dir, $alias)
     {
-        return (substr($path, 0, strlen($dir)+1) === $dir . '/') ? $alias . substr($path, strlen($dir)) : $path;
+        return (substr($path, 0, strlen($dir) + 1) === $dir . '/') ? $alias . substr($path, strlen($dir)) : $path;
     }
 
     public function preparePath(PackageInterface $package, $path)
