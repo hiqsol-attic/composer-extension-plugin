@@ -60,7 +60,10 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * @var array extra configuration
      */
-    protected $extraconfig = [];
+    protected $extraconfig = [
+        'aliases'   => [],
+        'bootstrap' => [],
+    ];
 
     /**
      * @var array extensions
@@ -117,9 +120,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         foreach (['aliases', 'bootstrap'] as $k) {
-            $v = empty($this->extraconfig[$k]) ? $this->$k : array_merge($this->$k, $this->extraconfig[$k]);
-            if (!empty($v)) {
-                $this->extraconfig[$k] = $v;
+            $this->extraconfig[$k] = array_merge($this->$k, $this->extraconfig[$k]);
+            if (empty($this->extraconfig[$k])) {
+                unset($this->extraconfig[$k]);
             }
         }
 
@@ -173,7 +176,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if (isset($extra[static::EXTRA_CONFIG])) {
-            $this->extraconfig = array_merge($this->extraconfig, $this->readExtraConf($extra[static::EXTRA_CONFIG]));
+            $this->extraconfig = array_merge($this->extraconfig, $this->readExtraConfig($package, $extra[static::EXTRA_CONFIG]));
         }
 
         $this->extensions[$package->getName()] = $extension;
@@ -181,13 +184,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
     /**
      * Read extraConf
-     * @param mixed $file
-     * @access protected
-     * @return void
+     * @param string $file
+     * @return array
      */
-    protected function readExtraConf($file)
+    protected function readExtraConfig(PackageInterface $package, $file)
     {
-        die($file);
+        $path = $this->preparePath($package, $file);
+        if (!file_exists($path)) {
+            $this->io->writeError('<error>Non existent extraconfig file</error> ' . $file . ' in ' . $package->getName());
+            exit(1);
+        }
+        return require($path);
     }
 
     /**
@@ -204,7 +211,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             return [];
         }
 
-        $vendor  = $this->getVendorDir();
         $aliases = [];
         foreach ($autoload[$psr] as $name => $path) {
             if (is_array($path)) {
@@ -212,20 +218,27 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 // we can not convert them into aliases as they are ambiguous
                 continue;
             }
-            $name    = str_replace('\\', '/', trim($name, '\\'));
-            $postfix = 'psr-0' === $psr ? '/' . $name : '';
-            if (!$this->getFilesystem()->isAbsolutePath($path)) {
-                $path = $vendor . '/' . $package->getPrettyName() . '/' . $path;
+            $name = str_replace('\\', '/', trim($name, '\\'));
+            $path = $this->preparePath($package, $path);
+            if (strpos($path . '/', $this->getVendorDir() . '/') === 0) {
+                $path = '<vendor-dir>' . substr($path, strlen($this->getVendorDir()));
             }
-            $path = $this->getFilesystem()->normalizePath($path);
-            if (strpos($path . '/', $vendor . '/') === 0) {
-                $aliases["@$name"] = '<vendor-dir>' . substr($path, strlen($vendor)) . $postfix;
-            } else {
-                $aliases["@$name"] = $path . $postfix;
+            if ('psr-0' === $psr) {
+                $path .= '/' . $name;
             }
+            $aliases["@$name"] = $path;
         }
 
         return $aliases;
+    }
+
+    public function preparePath(PackageInterface $package, $path)
+    {
+        if (!$this->getFilesystem()->isAbsolutePath($path)) {
+            $path = $this->getVendorDir() . '/' . $package->getPrettyName() . '/' . $path;
+        }
+
+        return $this->getFilesystem()->normalizePath($path);
     }
 
     /**
