@@ -183,7 +183,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Read extraConf
+     * Read extraConf.
      * @param string $file
      * @return array
      */
@@ -194,7 +194,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->io->writeError('<error>Non existent extraconfig file</error> ' . $file . ' in ' . $package->getName());
             exit(1);
         }
-        return require($path);
+        return require $path;
     }
 
     /**
@@ -279,7 +279,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     }
 
     /**
-     * Getter for filesystem utility
+     * Getter for filesystem utility.
      * @return Filesystem
      */
     public function getFilesystem()
