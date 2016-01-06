@@ -28,8 +28,8 @@ use Composer\Util\Filesystem;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
+    const PACKAGE_TYPE     = 'yii2-extension';
     const EXTRA_CONFIG     = 'yii2-extraconfig';
-    const EXTRA_BOOTSTRAP  = 'bootstrap';
     const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
     const EXTRACONFIG_FILE = 'yiisoft/yii2-extraconfig.php';
     const BASE_DIR_ALIAS   = '<base-dir>';
@@ -55,21 +55,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected $filesystem;
 
     /**
-     * @var array aliases
-     */
-    protected $aliases = [];
-
-    /**
-     * @var array bootstrap
-     */
-    protected $bootstrap = [];
-
-    /**
      * @var array extra configuration
      */
     protected $extraconfig = [
-        'aliases'   => ['@vendor' => self::BASE_DIR_ALIAS . '/vendor'],
-        'bootstrap' => [],
+        'aliases' => [
+            '@vendor' => self::BASE_DIR_ALIAS . '/vendor'
+        ],
     ];
 
     /**
@@ -121,15 +112,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->io->writeError('<info>Generating yii2 config files</info>');
         foreach ($this->getPackages() as $package) {
-            if ($package instanceof \Composer\Package\CompletePackageInterface) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() == self::PACKAGE_TYPE) {
                 $this->processPackage($package);
-            }
-        }
-
-        foreach (['aliases', 'bootstrap'] as $k) {
-            $this->extraconfig[$k] = array_merge($this->$k, $this->extraconfig[$k]);
-            if (empty($this->extraconfig[$k])) {
-                unset($this->extraconfig[$k]);
             }
         }
 
@@ -160,7 +144,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function processPackage(PackageInterface $package)
     {
-        $extra = $package->getExtra();
         $extension = [
             'name'    => $package->getName(),
             'version' => $package->getVersion(),
@@ -171,25 +154,22 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $extension['reference'] = $reference;
             }
         }
+        $this->extensions[$package->getName()] = $extension;
 
-        $this->aliases = array_merge($this->aliases,
+        $this->extraconfig['aliases'] = array_merge(
+            $this->extraconfig['aliases'],
             $this->prepareAliases($package, 'psr-0'),
             $this->prepareAliases($package, 'psr-4')
         );
 
-        if (isset($extra[static::EXTRA_BOOTSTRAP])) {
-            $this->bootstrap[] = $extra[static::EXTRA_BOOTSTRAP];
-        }
-
+        $extra = $package->getExtra();
         if (isset($extra[static::EXTRA_CONFIG])) {
             $this->extraconfig = array_merge_recursive($this->extraconfig, $this->readExtraConfig($package, $extra[static::EXTRA_CONFIG]));
         }
-
-        $this->extensions[$package->getName()] = $extension;
     }
 
     /**
-     * Read extraConf.
+     * Read extra config.
      * @param string $file
      * @return array
      */
