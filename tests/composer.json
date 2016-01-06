@@ -3,7 +3,11 @@
     "type": "project",
     "require": {
         "hiqdev/composer-extension-plugin": "*@dev",
-        "hiqdev/hidev-vendor": "*@dev",
-        "yiisoft/yii2-bootstrap": "^2.0"
+        "hiqdev/hidev-vendor": "*@dev"
+    },
+    "autoload": {
+        "psr-4": {
+            "test\\test\\": "src"
+        }
     }
 }
