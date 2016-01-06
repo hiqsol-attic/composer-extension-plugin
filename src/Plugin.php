@@ -68,7 +68,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * @var array extensions
      */
-    protected $extensions;
+    protected $extensions = [];
 
     /**
      * @var Composer instance
