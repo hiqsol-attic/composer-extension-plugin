@@ -3,6 +3,8 @@ hiqdev/composer-extension-plugin commits history
 
 ## Under development
 
+    - 71100f2 2016-01-06 fixed (sol@hiqdev.com)
+    - 8ef495a 2016-01-06 dropped old bootstrap support (sol@hiqdev.com)
     - ed7d8b7 2016-01-06 fixes (sol@hiqdev.com)
     - c1490d8 2016-01-06 + root package processing and BASE_DIR_ALIAS (sol@hiqdev.com)
     - 0a48dee 2016-01-06 looks working (sol@hiqdev.com)

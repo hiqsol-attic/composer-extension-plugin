@@ -59,7 +59,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $extraconfig = [
         'aliases' => [
-            '@vendor' => self::BASE_DIR_ALIAS . '/vendor'
+            '@vendor' => self::BASE_DIR_ALIAS . '/vendor',
         ],
     ];
 
@@ -113,7 +113,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->writeError('<info>Generating yii2 config files</info>');
         foreach ($this->getPackages() as $package) {
             $this->processPackage($this->composer->getPackage());
-            if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() == self::PACKAGE_TYPE) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() === self::PACKAGE_TYPE) {
                 $this->processPackage($package);
             }
         }
