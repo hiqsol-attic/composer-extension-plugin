@@ -31,7 +31,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     const EXTRA_CONFIG     = 'yii2-extraconfig';
     const EXTRA_BOOTSTRAP  = 'bootstrap';
     const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
-    const EXTRACONFIG_FILE = 'yiisoft/extraconfig.php';
+    const EXTRACONFIG_FILE = 'yiisoft/yii2-extraconfig.php';
     const BASE_DIR_ALIAS   = '<base-dir>';
 
     /**
@@ -119,7 +119,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostAnything(Event $event)
     {
-        $this->io->writeError('<info>' . $event->getName() . ' ...</info>');
+        $this->io->writeError('<info>Generating yii2 config files</info>');
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 $this->processPackage($package);
@@ -160,7 +160,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function processPackage(PackageInterface $package)
     {
-        $this->io->writeError($package->getName() . ' ');
         $extra = $package->getExtra();
         $extension = [
             'name'    => $package->getName(),
@@ -183,7 +182,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         if (isset($extra[static::EXTRA_CONFIG])) {
-            $this->extraconfig = array_merge($this->extraconfig, $this->readExtraConfig($package, $extra[static::EXTRA_CONFIG]));
+            $this->extraconfig = array_merge_recursive($this->extraconfig, $this->readExtraConfig($package, $extra[static::EXTRA_CONFIG]));
         }
 
         $this->extensions[$package->getName()] = $extension;
