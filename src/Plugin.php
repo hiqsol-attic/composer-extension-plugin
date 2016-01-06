@@ -15,6 +15,7 @@ use Composer\Composer;
 use Composer\EventDispatcher\EventSubscriberInterface;
 use Composer\IO\IOInterface;
 use Composer\Package\PackageInterface;
+use Composer\Package\RootPackageInterface;
 use Composer\Plugin\PluginInterface;
 use Composer\Script\Event;
 use Composer\Script\ScriptEvents;
@@ -31,11 +32,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     const EXTRA_BOOTSTRAP  = 'bootstrap';
     const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
     const EXTRACONFIG_FILE = 'yiisoft/extraconfig.php';
+    const BASE_DIR_ALIAS   = '<base-dir>';
 
     /**
      * @var PackageInterface[] the array of active composer packages
      */
     protected $packages;
+
+    /**
+     * @var string absolute path to the package base directory.
+     */
+    protected $baseDir;
 
     /**
      * @var string absolute path to vendor directory.
@@ -61,7 +68,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @var array extra configuration
      */
     protected $extraconfig = [
-        'aliases'   => [],
+        'aliases'   => ['@vendor' => self::BASE_DIR_ALIAS . '/vendor'],
         'bootstrap' => [],
     ];
 
@@ -142,8 +149,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0777, true);
         }
-        $array = str_replace("'<vendor-dir>", '$vendorDir . \'', var_export($data, true));
-        file_put_contents($path, "<?php\n\n\$vendorDir = dirname(__DIR__);\n\nreturn $array;\n");
+        $array = str_replace("'" . self::BASE_DIR_ALIAS, '$baseDir . \'', var_export($data, true));
+        file_put_contents($path, "<?php\n\n\$baseDir = dirname(dirname(__DIR__));\n\nreturn $array;\n");
     }
 
     /**
@@ -220,9 +227,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
             $name = str_replace('\\', '/', trim($name, '\\'));
             $path = $this->preparePath($package, $path);
-            if (strpos($path . '/', $this->getVendorDir() . '/') === 0) {
-                $path = '<vendor-dir>' . substr($path, strlen($this->getVendorDir()));
-            }
+            $path = $this->substitutePath($path, $this->getBaseDir(), self::BASE_DIR_ALIAS);
             if ('psr-0' === $psr) {
                 $path .= '/' . $name;
             }
@@ -232,10 +237,23 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         return $aliases;
     }
 
+    /**
+     * Substitute path with alias if applicable.
+     * @param string $path
+     * @param string $dir
+     * @param string $alias
+     * @return string
+     */
+    public function substitutePath($path, $dir, $alias)
+    {
+        return (substr($path, 0, strlen($dir)+1) === $dir . '/') ? $alias . substr($path, strlen($dir)) : $path;
+    }
+
     public function preparePath(PackageInterface $package, $path)
     {
         if (!$this->getFilesystem()->isAbsolutePath($path)) {
-            $path = $this->getVendorDir() . '/' . $package->getPrettyName() . '/' . $path;
+            $prefix = $package instanceof RootPackageInterface ? $this->getBaseDir() : $this->getVendorDir() . '/' . $package->getPrettyName();
+            $path = $prefix . '/' . $path;
         }
 
         return $this->getFilesystem()->normalizePath($path);
@@ -259,9 +277,23 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->packages === null) {
             $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
+            $this->packages[] = $this->composer->getPackage();
         }
 
         return $this->packages;
+    }
+
+    /**
+     * Get absolute path to package base dir.
+     * @return string
+     */
+    public function getBaseDir()
+    {
+        if ($this->baseDir === null) {
+            $this->baseDir = dirname($this->getVendorDir());
+        }
+
+        return $this->baseDir;
     }
 
     /**
