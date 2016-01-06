@@ -112,6 +112,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         $this->io->writeError('<info>Generating yii2 config files</info>');
         foreach ($this->getPackages() as $package) {
+            $this->processPackage($this->composer->getPackage());
             if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() == self::PACKAGE_TYPE) {
                 $this->processPackage($package);
             }
@@ -256,7 +257,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         if ($this->packages === null) {
             $this->packages = $this->composer->getRepositoryManager()->getLocalRepository()->getCanonicalPackages();
-            $this->packages[] = $this->composer->getPackage();
         }
 
         return $this->packages;
