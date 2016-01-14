@@ -3,6 +3,10 @@ hiqdev/composer-extension-plugin commits history
 
 ## Under development
 
+
+## 0.0.1 2016-01-14
+
+- Added basics
     - 71100f2 2016-01-06 fixed (sol@hiqdev.com)
     - 8ef495a 2016-01-06 dropped old bootstrap support (sol@hiqdev.com)
     - ed7d8b7 2016-01-06 fixes (sol@hiqdev.com)
