@@ -112,8 +112,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function onPostAnything(Event $event)
     {
         $this->io->writeError('<info>Generating yii2 config files</info>');
+        $this->processPackage($this->composer->getPackage());
         foreach ($this->getPackages() as $package) {
-            $this->processPackage($this->composer->getPackage());
             if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() === self::PACKAGE_TYPE) {
                 $this->processPackage($package);
             }
