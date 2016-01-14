@@ -33,6 +33,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
     const EXTRACONFIG_FILE = 'yiisoft/yii2-extraconfig.php';
     const BASE_DIR_ALIAS   = '<base-dir>';
+    const VENDOR_DIR_ALIAS = '<base-dir>/vendor';
 
     /**
      * @var PackageInterface[] the array of active composer packages
@@ -59,7 +60,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $extraconfig = [
         'aliases' => [
-            '@vendor' => self::BASE_DIR_ALIAS . '/vendor',
+            '@vendor' => self::VENDOR_DIR_ALIAS,
         ],
     ];
 
