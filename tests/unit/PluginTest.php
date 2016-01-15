@@ -48,9 +48,4 @@ class PluginTest extends \PHPUnit_Framework_TestCase
     {
         $this->assertInternalType('array', $this->object->getSubscribedEvents());
     }
-
-    public function testOnPostAnything()
-    {
-        $this->object->onPostAnything($this->event);
-    }
 }
