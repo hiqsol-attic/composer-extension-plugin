@@ -1,14 +1,13 @@
 package:
     type:           composer-plugin
     name:           composer-extension-plugin
-    namespace:      hiqdev\composerextensionplugin
-    headline:       Composer Extension Plugin
     title:          Composer plugin for Yii extensions
-    forum:          http://forum.hiqdev.com/
+    headline:       Composer Extension Plugin
     keywords:       composer, yii2, extension, plugin
+    namespace:      hiqdev\composerextensionplugin
     description:    |
         This [Composer](https://getcomposer.org/) plugin provides
-        more functional Yii extensions.
+        more functional [Yii](http://www.yiiframework.com/) extensions.
 
 require:
     hiqdev/hidev-php:    "*"

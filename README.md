@@ -11,7 +11,7 @@ Composer Extension Plugin
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master)
 
 This [Composer](https://getcomposer.org/) plugin provides
-more functional Yii extensions.
+more functional [Yii](http://www.yiiframework.com/) extensions.
 
 ## Installation
 
