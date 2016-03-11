@@ -114,7 +114,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         $this->io->writeError('<info>Generating yii2 config files</info>');
         $this->processPackage($this->composer->getPackage());
         foreach ($this->getPackages() as $package) {
-            if ($package instanceof \Composer\Package\CompletePackageInterface && $package->getType() === self::PACKAGE_TYPE) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface
+            && ($package->getType() === self::PACKAGE_TYPE || $this->extractConfigPath($package))) {
                 $this->processPackage($package);
             }
         }
@@ -164,10 +165,16 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->prepareAliases($package, 'psr-4')
         );
 
-        $extra = $package->getExtra();
-        if (isset($extra[static::EXTRA_CONFIG])) {
-            $this->extraconfig = array_merge_recursive($this->extraconfig, $this->readExtraConfig($package, $extra[static::EXTRA_CONFIG]));
+        $path = $this->extractConfigPath($package);
+        if ($path) {
+            $this->extraconfig = array_merge_recursive($this->extraconfig, $this->readExtraConfig($package, $path));
         }
+    }
+
+    public function extractConfigPath(PackageInterface $package)
+    {
+        $extra = $package->getExtra();
+        return isset($extra[static::EXTRA_CONFIG]) ? $extra[static::EXTRA_CONFIG] : null;
     }
 
     /**
