@@ -3,14 +3,20 @@ hiqdev/composer-extension-plugin commits history
 
 ## Under development
 
+- Added processing packages that have extraconfig option
+    - 006c65f 2016-03-11 rehideved (sol@hiqdev.com)
+    - 1a949c3 2016-03-11 + process packages that have extraconfig option (sol@hiqdev.com)
+    - de3f3fa 2016-01-15 fixed tests (sol@hiqdev.com)
 
 ## 0.0.3 2016-01-15
 
 - Fixed bug
+    - 75c9cbf 2016-01-14 fixed stupid typo (sol@hiqdev.com)
 
 ## 0.0.2 2016-01-14
 
 - Fixed PHP 5.5 compatibility
+    - 2b22620 2016-01-14 fixed for PHP 5.5 compatibility (sol@hiqdev.com)
 
 ## 0.0.1 2016-01-14
 
