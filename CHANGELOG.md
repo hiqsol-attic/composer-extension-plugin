@@ -1,7 +1,7 @@
 hiqdev/composer-extension-plugin changelog
 ------------------------------------------
 
-## Under development
+## 0.0.4 2016-03-11
 
 - Added processing packages that have extraconfig option
 
