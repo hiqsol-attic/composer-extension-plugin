@@ -120,7 +120,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-        $this->saveFile(static::EXTENSIONS_FILE, $this->extensions);
+    //  $this->saveFile(static::EXTENSIONS_FILE, $this->extensions);
+        $this->saveFile(static::EXTENSIONS_FILE, []);
         $this->saveFile(static::EXTRACONFIG_FILE, $this->extraconfig);
     }
 
