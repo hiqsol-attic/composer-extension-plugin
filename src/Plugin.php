@@ -28,12 +28,12 @@ use Composer\Util\Filesystem;
  */
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
-    const PACKAGE_TYPE     = 'yii2-extension';
-    const EXTRA_CONFIG     = 'yii2-extraconfig';
-    const EXTENSIONS_FILE  = 'yiisoft/extensions.php';
-    const EXTRACONFIG_FILE = 'yiisoft/yii2-extraconfig.php';
-    const BASE_DIR_ALIAS   = '<base-dir>';
-    const VENDOR_DIR_ALIAS = '<base-dir>/vendor';
+    const PACKAGE_TYPE          = 'yii2-extension';
+    const CONFIG_PATH_OPTION    = 'extension-config';
+    const YII2_EXTENSIONS_FILE  = 'yiisoft/extensions.php';
+    const MERGED_CONFIG_FILE    = 'hiqdev/extensions-config.php';
+    const BASE_DIR_ALIAS        = '<base-dir>';
+    const VENDOR_DIR_ALIAS      = '<base-dir>/vendor';
 
     /**
      * @var PackageInterface[] the array of active composer packages
@@ -99,7 +99,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     {
         return [
             ScriptEvents::POST_AUTOLOAD_DUMP => [
-                ['onPostAnything', 0],
+                ['onPostAutoloadDump', 0],
             ],
         ];
     }
@@ -109,7 +109,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param Event $event
      * @void
      */
-    public function onPostAnything(Event $event)
+    public function onPostAutoloadDump(Event $event)
     {
         $this->io->writeError('<info>Generating yii2 config files</info>');
         $this->processPackage($this->composer->getPackage());
@@ -120,9 +120,9 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-    //  $this->saveFile(static::EXTENSIONS_FILE, $this->extensions);
-        $this->saveFile(static::EXTENSIONS_FILE, []);
-        $this->saveFile(static::EXTRACONFIG_FILE, $this->extraconfig);
+    //  $this->saveFile(static::YII2_EXTENSIONS_FILE, $this->extensions);
+        $this->saveFile(static::YII2_EXTENSIONS_FILE, []);
+        $this->saveFile(static::MERGED_CONFIG_FILE, $this->extraconfig);
     }
 
     /**
@@ -175,7 +175,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function extractConfigPath(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        return isset($extra[static::EXTRA_CONFIG]) ? $extra[static::EXTRA_CONFIG] : null;
+        return isset($extra[static::CONFIG_PATH_OPTION]) ? $extra[static::CONFIG_PATH_OPTION] : null;
     }
 
     /**
