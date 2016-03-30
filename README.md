@@ -6,8 +6,8 @@ Composer Extension Plugin
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/composer-extension-plugin/v/stable)](https://packagist.org/packages/hiqdev/composer-extension-plugin)
 [![Total Downloads](https://poser.pugx.org/hiqdev/composer-extension-plugin/downloads)](https://packagist.org/packages/hiqdev/composer-extension-plugin)
 [![Build Status](https://img.shields.io/travis/hiqdev/composer-extension-plugin.svg)](https://travis-ci.org/hiqdev/composer-extension-plugin)
-[![Code Coverage](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/?branch=master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/?branch=master)
+[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/hiqdev/composer-extension-plugin.svg)](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/)
+[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/hiqdev/composer-extension-plugin.svg)](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/)
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master)
 
 This [Composer](https://getcomposer.org/) plugin provides

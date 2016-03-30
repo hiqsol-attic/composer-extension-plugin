@@ -49,13 +49,13 @@
     "require-dev": {
         "composer/composer": "~1.0@dev"
     },
-    "replace": {
-        "yiisoft/yii2-composer": "*"
-    },
     "autoload": {
         "psr-4": {
             "hiqdev\\composerextensionplugin\\": "src"
         }
+    },
+    "replace": {
+        "yiisoft/yii2-composer": "*"
     },
     "extra": {
         "class": "hiqdev\\composerextensionplugin\\Plugin"

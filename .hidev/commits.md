@@ -1,6 +1,12 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## Under development
+
+    - c47dc8f 2016-03-30 + mergeConfig (sol@hiqdev.com)
+    - 2f03857 2016-03-30 redoing `yii2-extraconfig` to `extension-config` (sol@hiqdev.com)
+    - a935f20 2016-03-21 trying empty original yii2 `extensions.php` file (sol@hiqdev.com)
+
 ## 0.0.4 2016-03-11
 
 - Added processing packages that have extraconfig option
