@@ -111,7 +111,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     public function onPostAutoloadDump(Event $event)
     {
-        $this->io->writeError('<info>Generating yii2 config files</info>');
+        $this->io->writeError('<info>Generating extensions files</info>');
         $this->processPackage($this->composer->getPackage());
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface
