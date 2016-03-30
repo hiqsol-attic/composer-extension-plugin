@@ -168,8 +168,41 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 
         $path = $this->extractConfigPath($package);
         if ($path) {
-            $this->extraconfig = array_merge_recursive($this->extraconfig, $this->readExtraConfig($package, $path));
+            $this->extraconfig = static::mergeConfig($this->extraconfig, $this->readExtraConfig($package, $path));
         }
+    }
+
+    /**
+     * Merges two or more arrays into one recursively.
+     * Based on Yii2 yii\helpers\BaseArrayHelper::merge.
+     * @param array $a array to be merged to
+     * @param array $b array to be merged from
+     * @return array the merged array
+     */
+    public static function mergeConfig($a, $b)
+    {
+        $args = func_get_args();
+        $res = array_shift($args);
+        foreach ($args as $items) {
+            if (!is_array($items)) {
+                continue;
+            }
+            foreach ($items as $k => $v) {
+                if (is_int($k)) {
+                    if (isset($res[$k])) {
+                        $res[] = $v;
+                    } else {
+                        $res[$k] = $v;
+                    }
+                } elseif (is_array($v) && isset($res[$k]) && is_array($res[$k])) {
+                    $res[$k] = self::mergeConfig($res[$k], $v);
+                } else {
+                    $res[$k] = $v;
+                }
+            }
+        }
+
+        return $res;
     }
 
     public function extractConfigPath(PackageInterface $package)
