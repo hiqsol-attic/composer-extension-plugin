@@ -1,10 +1,10 @@
 {
     "name": "hiqdev/composer-extension-plugin",
     "type": "composer-plugin",
-    "description": "Composer plugin for Yii extensions",
+    "description": "Composer plugin for pluggable extensions",
     "keywords": [
         "composer",
-        "yii2",
+        "pluggable",
         "extension",
         "plugin"
     ],

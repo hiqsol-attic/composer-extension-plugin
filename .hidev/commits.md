@@ -1,6 +1,11 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## Under development
+
+    - 9209cbb 2016-04-13 aliases put to `common.php` file (sol@hiqdev.com)
+    - 5e93ea3 2016-04-13 REDONE to create separate manageable configs (sol@hiqdev.com)
+
 ## 0.0.5 2016-03-30
 
 - Changed `yii2-extraconfig` to `extension-config`

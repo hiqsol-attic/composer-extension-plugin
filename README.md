@@ -1,7 +1,7 @@
 Composer Extension Plugin
 =========================
 
-**Composer plugin for Yii extensions**
+**Composer plugin for pluggable extensions**
 
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/composer-extension-plugin/v/stable)](https://packagist.org/packages/hiqdev/composer-extension-plugin)
 [![Total Downloads](https://poser.pugx.org/hiqdev/composer-extension-plugin/downloads)](https://packagist.org/packages/hiqdev/composer-extension-plugin)
@@ -10,8 +10,7 @@ Composer Extension Plugin
 [![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/hiqdev/composer-extension-plugin.svg)](https://scrutinizer-ci.com/g/hiqdev/composer-extension-plugin/)
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:composer-extension-plugin/dev-master)
 
-This [Composer](https://getcomposer.org/) plugin provides
-more functional [Yii](http://www.yiiframework.com/) extensions.
+This [Composer](https://getcomposer.org/) plugin provides pluggable extensions.
 
 ## Installation
 

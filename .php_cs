@@ -1,7 +1,7 @@
 <?php
 
 $header = <<<EOF
-Composer plugin for Yii extensions
+Composer plugin for pluggable extensions
 
 @link      https://github.com/hiqdev/composer-extension-plugin
 @package   composer-extension-plugin

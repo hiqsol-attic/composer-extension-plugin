@@ -1,14 +1,20 @@
 package:
     type:           composer-plugin
     name:           composer-extension-plugin
-    title:          Composer plugin for Yii extensions
+    title:          Composer plugin for pluggable extensions
     headline:       Composer Extension Plugin
-    keywords:       composer, yii2, extension, plugin
+    keywords:       composer, pluggable, extension, plugin
     namespace:      hiqdev\composerextensionplugin
     description:    |
-        This [Composer](https://getcomposer.org/) plugin provides
-        more functional [Yii](http://www.yiiframework.com/) extensions.
+        This [Composer](https://getcomposer.org/) plugin provides pluggable extensions.
 
 require:
-    hiqdev/hidev-php:    "*"
-    hiqdev/hidev-vendor: "*"
+    hiqdev/hidev-php:           "*@dev"
+    hiqdev/hidev-readme:        "*@dev"
+    hiqdev/hidev-travis:        "*@dev"
+    hiqdev/hidev-vendor:        "*@dev"
+    hiqdev/hidev-license:       "*@dev"
+    hiqdev/hidev-phpunit:       "*@dev"
+    hiqdev/hidev-composer:      "*@dev"
+    hiqdev/hidev-scrutinizer:   "*@dev"
+    hiqdev/hidev-php-cs-fixer:  "*@dev"
