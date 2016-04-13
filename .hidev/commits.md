@@ -1,8 +1,10 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
-## Under development
+## 0.0.6 2016-04-13
 
+- Changed to create separate manageable configs
+    - 3722bb3 2016-04-13 improved package description (sol@hiqdev.com)
     - 9209cbb 2016-04-13 aliases put to `common.php` file (sol@hiqdev.com)
     - 5e93ea3 2016-04-13 REDONE to create separate manageable configs (sol@hiqdev.com)
 
