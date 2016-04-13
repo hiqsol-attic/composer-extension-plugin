@@ -29,11 +29,11 @@ use Composer\Util\Filesystem;
 class Plugin implements PluginInterface, EventSubscriberInterface
 {
     const PACKAGE_TYPE          = 'yii2-extension';
-    const CONFIG_PATH_OPTION    = 'extension-config';
+    const EXTRA_OPTION_NAME     = 'extension-plugin';
     const YII2_EXTENSIONS_FILE  = 'yiisoft/extensions.php';
-    const MERGED_CONFIG_FILE    = 'hiqdev/extensions-config.php';
-    const BASE_DIR_ALIAS        = '<base-dir>';
-    const VENDOR_DIR_ALIAS      = '<base-dir>/vendor';
+    const OUTPUT_PATH           = 'hiqdev';
+    const BASE_DIR_SAMPLE       = '<base-dir>';
+    const VENDOR_DIR_SAMPLE     = '<base-dir>/vendor';
 
     /**
      * @var PackageInterface[] the array of active composer packages
@@ -56,18 +56,14 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     protected $filesystem;
 
     /**
-     * @var array extra configuration
+     * @var array whole data
      */
-    protected $extraconfig = [
+    protected $data = [
+        'extensions' => [],
         'aliases' => [
-            '@vendor' => self::VENDOR_DIR_ALIAS,
+            '@vendor' => self::VENDOR_DIR_SAMPLE,
         ],
     ];
-
-    /**
-     * @var array extensions
-     */
-    protected $extensions = [];
 
     /**
      * @var Composer instance
@@ -83,7 +79,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * Initializes the plugin object with the passed $composer and $io.
      * @param Composer $composer
      * @param IOInterface $io
-     * @void
      */
     public function activate(Composer $composer, IOInterface $io)
     {
@@ -107,29 +102,33 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Simply rewrites extensions file from scratch.
      * @param Event $event
-     * @void
      */
     public function onPostAutoloadDump(Event $event)
     {
         $this->io->writeError('<info>Generating extensions files</info>');
         $this->processPackage($this->composer->getPackage());
         foreach ($this->getPackages() as $package) {
-            if ($package instanceof \Composer\Package\CompletePackageInterface
-            && ($package->getType() === self::PACKAGE_TYPE || $this->extractConfigPath($package))) {
+            if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 $this->processPackage($package);
             }
         }
 
-    //  $this->saveFile(static::YII2_EXTENSIONS_FILE, $this->extensions);
+    //  $this->saveFile(static::YII2_EXTENSIONS_FILE, $this->data['extensions']);
         $this->saveFile(static::YII2_EXTENSIONS_FILE, []);
-        $this->saveFile(static::MERGED_CONFIG_FILE, $this->extraconfig);
+        foreach ($this->data as $name => $data) {
+            $this->saveFile($this->buildOutputPath($name), $data);
+        }
+    }
+
+    public function buildOutputPath($name)
+    {
+        return static::OUTPUT_PATH . DIRECTORY_SEPARATOR . $name . '.php';
     }
 
     /**
      * Writes file.
      * @param string $file
      * @param array $data
-     * @void
      */
     protected function saveFile($file, array $data)
     {
@@ -137,17 +136,22 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0777, true);
         }
-        $array = str_replace("'" . self::BASE_DIR_ALIAS, '$baseDir . \'', var_export($data, true));
+        $array = str_replace("'" . self::BASE_DIR_SAMPLE, '$baseDir . \'', var_export($data, true));
         file_put_contents($path, "<?php\n\n\$baseDir = dirname(dirname(__DIR__));\n\nreturn $array;\n");
     }
 
     /**
      * Scans the given package and collects extensions data.
      * @param PackageInterface $package
-     * @void
      */
     public function processPackage(PackageInterface $package)
     {
+        $extra = $package->getExtra();
+        $files = isset($extra[self::EXTRA_OPTION_NAME]) ? $extra[self::EXTRA_OPTION_NAME] : [];
+        if ($package->getType() !== self::PACKAGE_TYPE && empty($files)) {
+            return;
+        }
+
         $extension = [
             'name'    => $package->getName(),
             'version' => $package->getVersion(),
@@ -158,17 +162,17 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 $extension['reference'] = $reference;
             }
         }
-        $this->extensions[$package->getName()] = $extension;
+        $this->data['extensions'][$package->getName()] = $extension;
 
-        $this->extraconfig['aliases'] = array_merge(
-            $this->extraconfig['aliases'],
+        $this->data['aliases'] = array_merge(
+            $this->data['aliases'],
             $this->prepareAliases($package, 'psr-0'),
             $this->prepareAliases($package, 'psr-4')
         );
 
-        $path = $this->extractConfigPath($package);
-        if ($path) {
-            $this->extraconfig = static::mergeConfig($this->extraconfig, $this->readExtraConfig($package, $path));
+        foreach ($files as $name => $path) {
+            $config = $this->readExtraConfig($package, $path);
+            $this->data[$name] = isset($this->data[$name]) ? static::mergeConfig($this->data[$name], $config) : $config;
         }
     }
 
@@ -203,12 +207,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
 
         return $res;
-    }
-
-    public function extractConfigPath(PackageInterface $package)
-    {
-        $extra = $package->getExtra();
-        return isset($extra[static::CONFIG_PATH_OPTION]) ? $extra[static::CONFIG_PATH_OPTION] : null;
     }
 
     /**
@@ -249,7 +247,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
             $name = str_replace('\\', '/', trim($name, '\\'));
             $path = $this->preparePath($package, $path);
-            $path = $this->substitutePath($path, $this->getBaseDir(), self::BASE_DIR_ALIAS);
+            $path = $this->substitutePath($path, $this->getBaseDir(), self::BASE_DIR_SAMPLE);
             if ('psr-0' === $psr) {
                 $path .= '/' . $name;
             }
@@ -284,7 +282,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     /**
      * Sets [[packages]].
      * @param PackageInterface[] $packages
-     * @void
      */
     public function setPackages(array $packages)
     {
