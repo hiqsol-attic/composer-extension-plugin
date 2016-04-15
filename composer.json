@@ -54,9 +54,6 @@
             "hiqdev\\composerextensionplugin\\": "src"
         }
     },
-    "replace": {
-        "yiisoft/yii2-composer": "*"
-    },
     "extra": {
         "class": "hiqdev\\composerextensionplugin\\Plugin"
     }

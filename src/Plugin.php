@@ -30,7 +30,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
 {
     const PACKAGE_TYPE          = 'yii2-extension';
     const EXTRA_OPTION_NAME     = 'extension-plugin';
-    const YII2_EXTENSIONS_FILE  = 'yiisoft/extensions.php';
     const OUTPUT_PATH           = 'hiqdev';
     const BASE_DIR_SAMPLE       = '<base-dir>';
     const VENDOR_DIR_SAMPLE     = '<base-dir>/vendor';
@@ -115,8 +114,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             }
         }
 
-    //  $this->saveFile(static::YII2_EXTENSIONS_FILE, $this->data['extensions']);
-        $this->saveFile(static::YII2_EXTENSIONS_FILE, []);
         foreach ($this->data as $name => $data) {
             $this->saveFile($this->buildOutputPath($name), $data);
         }
