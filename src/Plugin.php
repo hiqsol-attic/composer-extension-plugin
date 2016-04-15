@@ -59,11 +59,6 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $data = [
         'extensions' => [],
-        'common-config' => [
-            'aliases' => [
-                '@vendor' => self::VENDOR_DIR_SAMPLE,
-            ],
-        ],
     ];
 
     /**
@@ -146,7 +141,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function processPackage(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        $files = isset($extra[self::EXTRA_OPTION_NAME]) ? (array)$extra[self::EXTRA_OPTION_NAME] : null;
+        $files = isset($extra[self::EXTRA_OPTION_NAME]) ? $extra[self::EXTRA_OPTION_NAME] : null;
         if ($package->getType() !== self::PACKAGE_TYPE && is_null($files)) {
             return;
         }
@@ -163,14 +158,13 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
         $this->data['extensions'][$package->getName()] = $extension;
 
-        $this->data['common-config']['aliases'] = array_merge(
-            $this->data['common-config']['aliases'],
-            $this->prepareAliases($package, 'psr-0'),
-            $this->prepareAliases($package, 'psr-4')
-        );
-
-        foreach ($files as $name => $path) {
-            $config = $this->readExtraConfig($package, $path);
+        foreach ((array)$files as $name => $path) {
+            $config = $this->readExtensionConfig($package, $path);
+            $config['aliases'] = array_merge(
+                isset($config['aliases']) ? (array)$config['aliases'] : [],
+                $this->prepareAliases($package, 'psr-0'),
+                $this->prepareAliases($package, 'psr-4')
+            );
             $this->data[$name] = isset($this->data[$name]) ? static::mergeConfig($this->data[$name], $config) : $config;
         }
     }
@@ -213,11 +207,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @param string $file
      * @return array
      */
-    protected function readExtraConfig(PackageInterface $package, $file)
+    protected function readExtensionConfig(PackageInterface $package, $file)
     {
         $path = $this->preparePath($package, $file);
         if (!file_exists($path)) {
-            $this->io->writeError('<error>Non existent extraconfig file</error> ' . $file . ' in ' . $package->getName());
+            $this->io->writeError('<error>Non existent extension config file</error> ' . $file . ' in ' . $package->getName());
             exit(1);
         }
         return require $path;
