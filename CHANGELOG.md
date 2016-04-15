@@ -1,6 +1,10 @@
 hiqdev/composer-extension-plugin changelog
 ------------------------------------------
 
+## 0.0.7 2016-04-15
+
+- Changed to not touch yii2-composer
+
 ## 0.0.6 2016-04-13
 
 - Changed to create separate manageable configs

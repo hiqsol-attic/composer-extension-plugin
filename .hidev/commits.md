@@ -1,6 +1,11 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## 0.0.7 2016-04-15
+
+- Changed to not touch yii2-composer
+    - 7fd7dac 2016-04-15 don't touch yii2-composer (sol@hiqdev.com)
+
 ## 0.0.6 2016-04-13
 
 - Changed to create separate manageable configs
