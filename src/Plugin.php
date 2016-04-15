@@ -146,8 +146,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function processPackage(PackageInterface $package)
     {
         $extra = $package->getExtra();
-        $files = isset($extra[self::EXTRA_OPTION_NAME]) ? $extra[self::EXTRA_OPTION_NAME] : [];
-        if ($package->getType() !== self::PACKAGE_TYPE && empty($files)) {
+        $files = isset($extra[self::EXTRA_OPTION_NAME]) ? (array)$extra[self::EXTRA_OPTION_NAME] : null;
+        if ($package->getType() !== self::PACKAGE_TYPE && is_null($files)) {
             return;
         }
 
