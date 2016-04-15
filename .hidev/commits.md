@@ -1,6 +1,12 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## 0.0.9 2016-04-15
+
+- Removed writing common config
+    - 4d1db04 2016-04-15 removed writing common-config (sol@hiqdev.com)
+    - e7072d3 2016-04-15 changed to `common-config` <- `common` (sol@hiqdev.com)
+
 ## 0.0.8 2016-04-15
 
     - c1ca12b 2016-04-15 changed package processing condition (sol@hiqdev.com)

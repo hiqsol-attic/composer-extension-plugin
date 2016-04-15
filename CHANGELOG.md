@@ -1,6 +1,10 @@
 hiqdev/composer-extension-plugin changelog
 ------------------------------------------
 
+## 0.0.9 2016-04-15
+
+- Removed writing common config
+
 ## 0.0.8 2016-04-15
 
 
