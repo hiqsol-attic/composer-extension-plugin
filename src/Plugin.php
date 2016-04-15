@@ -59,7 +59,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      */
     protected $data = [
         'extensions' => [],
-        'common' => [
+        'common-config' => [
             'aliases' => [
                 '@vendor' => self::VENDOR_DIR_SAMPLE,
             ],
@@ -163,8 +163,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
         $this->data['extensions'][$package->getName()] = $extension;
 
-        $this->data['common']['aliases'] = array_merge(
-            $this->data['common']['aliases'],
+        $this->data['common-config']['aliases'] = array_merge(
+            $this->data['common-config']['aliases'],
             $this->prepareAliases($package, 'psr-0'),
             $this->prepareAliases($package, 'psr-4')
         );
