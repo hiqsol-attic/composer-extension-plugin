@@ -58,6 +58,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
      * @var array whole data
      */
     protected $data = [
+        'aliases'    => [],
         'extensions' => [],
     ];
 
@@ -158,13 +159,18 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         }
         $this->data['extensions'][$package->getName()] = $extension;
 
+        $aliases = array_merge(
+            $this->prepareAliases($package, 'psr-0'),
+            $this->prepareAliases($package, 'psr-4')
+        );
+        $this->data['aliases'] = array_merge($this->data['aliases'], $aliases);
         foreach ((array)$files as $name => $path) {
             $config = $this->readExtensionConfig($package, $path);
             $config['aliases'] = array_merge(
-                isset($config['aliases']) ? (array)$config['aliases'] : [],
-                $this->prepareAliases($package, 'psr-0'),
-                $this->prepareAliases($package, 'psr-4')
+                $aliases,
+                isset($config['aliases']) ? (array)$config['aliases'] : []
             );
+            $this->data['aliases'] = array_merge($this->data['aliases'], $config['aliases']);
             $this->data[$name] = isset($this->data[$name]) ? static::mergeConfig($this->data[$name], $config) : $config;
         }
     }
