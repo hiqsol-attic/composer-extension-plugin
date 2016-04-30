@@ -1,6 +1,12 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## Under development
+
+- Added creating `vendor/hiqddev/aliases.php` with all found aliases
+    - e8b5ec4 2016-04-30 renamed `require` to `plugins` (sol@hiqdev.com)
+    - ee4a3bc 2016-04-30 + creating `vendor/hiqddev/aliases.php` with all aliases (sol@hiqdev.com)
+
 ## 0.0.9 2016-04-15
 
 - Removed writing common config
