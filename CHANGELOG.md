@@ -1,7 +1,7 @@
 hiqdev/composer-extension-plugin changelog
 ------------------------------------------
 
-## Under development
+## 0.1.0 2016-04-30
 
 - Added creating `vendor/hiqddev/aliases.php` with all found aliases
 
