@@ -8,6 +8,6 @@ package:
     description:    |
         This [Composer](https://getcomposer.org/) plugin provides pluggable extensions.
 
-require:
+plugins:
     hiqdev/hidev-php:           "*"
     hiqdev/hidev-vendor:        "*"
