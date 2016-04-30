@@ -164,11 +164,11 @@ class Plugin implements PluginInterface, EventSubscriberInterface
             $this->prepareAliases($package, 'psr-4')
         );
         $this->data['aliases'] = array_merge($this->data['aliases'], $aliases);
-        foreach ((array)$files as $name => $path) {
+        foreach ((array) $files as $name => $path) {
             $config = $this->readExtensionConfig($package, $path);
             $config['aliases'] = array_merge(
                 $aliases,
-                isset($config['aliases']) ? (array)$config['aliases'] : []
+                isset($config['aliases']) ? (array) $config['aliases'] : []
             );
             $this->data['aliases'] = array_merge($this->data['aliases'], $config['aliases']);
             $this->data[$name] = isset($this->data[$name]) ? static::mergeConfig($this->data[$name], $config) : $config;
