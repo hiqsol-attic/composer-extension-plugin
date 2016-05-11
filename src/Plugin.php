@@ -103,12 +103,12 @@ class Plugin implements PluginInterface, EventSubscriberInterface
     public function onPostAutoloadDump(Event $event)
     {
         $this->io->writeError('<info>Generating extensions files</info>');
-        $this->processPackage($this->composer->getPackage());
         foreach ($this->getPackages() as $package) {
             if ($package instanceof \Composer\Package\CompletePackageInterface) {
                 $this->processPackage($package);
             }
         }
+        $this->processPackage($this->composer->getPackage());
 
         foreach ($this->data as $name => $data) {
             $this->saveFile($this->buildOutputPath($name), $data);
