@@ -1,6 +1,11 @@
 hiqdev/composer-extension-plugin commits history
 ------------------------------------------------
 
+## 0.1.1 2016-05-11
+
+- Fixed: process root package in the last
+    - 09a97bf 2016-05-11 process root package in the last (sol@hiqdev.com)
+
 ## 0.1.0 2016-04-30
 
 - Added creating `vendor/hiqddev/aliases.php` with all found aliases
