@@ -131,7 +131,7 @@ class Plugin implements PluginInterface, EventSubscriberInterface
         if (!file_exists(dirname($path))) {
             mkdir(dirname($path), 0777, true);
         }
-        $array = str_replace("'" . self::BASE_DIR_SAMPLE, '$baseDir . \'', var_export($data, true));
+        $array = str_replace("'" . self::BASE_DIR_SAMPLE, '$baseDir . \'', Helper::exportVar($data));
         file_put_contents($path, "<?php\n\n\$baseDir = dirname(dirname(__DIR__));\n\nreturn $array;\n");
     }
 
@@ -171,41 +171,8 @@ class Plugin implements PluginInterface, EventSubscriberInterface
                 isset($config['aliases']) ? (array) $config['aliases'] : []
             );
             $this->data['aliases'] = array_merge($this->data['aliases'], $config['aliases']);
-            $this->data[$name] = isset($this->data[$name]) ? static::mergeConfig($this->data[$name], $config) : $config;
+            $this->data[$name] = isset($this->data[$name]) ? Helper::mergeConfig($this->data[$name], $config) : $config;
         }
-    }
-
-    /**
-     * Merges two or more arrays into one recursively.
-     * Based on Yii2 yii\helpers\BaseArrayHelper::merge.
-     * @param array $a array to be merged to
-     * @param array $b array to be merged from
-     * @return array the merged array
-     */
-    public static function mergeConfig($a, $b)
-    {
-        $args = func_get_args();
-        $res = array_shift($args);
-        foreach ($args as $items) {
-            if (!is_array($items)) {
-                continue;
-            }
-            foreach ($items as $k => $v) {
-                if (is_int($k)) {
-                    if (isset($res[$k])) {
-                        $res[] = $v;
-                    } else {
-                        $res[$k] = $v;
-                    }
-                } elseif (is_array($v) && isset($res[$k]) && is_array($res[$k])) {
-                    $res[$k] = self::mergeConfig($res[$k], $v);
-                } else {
-                    $res[$k] = $v;
-                }
-            }
-        }
-
-        return $res;
     }
 
     /**
